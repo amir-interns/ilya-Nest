@@ -1,29 +1,29 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ProdController, BalanceRequestController } from './prod/prod.controller';
-import { ProductService, BalanceRequestService} from './prod/prodService'
-// import { ProdModule } from './prod/prod.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { BalanceRequest } from './entities/BalanceRequest'
 import { ProdModule } from './prod/prod.modules'
 import { BlockchainModule } from './blockchain/blockchain.modules'
-
+import { UsersModule } from './users/users.module';
+import { ConfigModule } from '@nestjs/config'
 
 @Module({
-  imports: [ProdModule, BlockchainModule,
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
       port: 5432,
-      username: 'ilya',
-      password: 'ilya',
-      database: 'express',
+      username: process.env.username,
+      password: process.env.password,
+      database: process.env.database,
       entities: [BalanceRequest],
       synchronize: true,
-      })
-    ],
-//     controllers: [ProdController, BalanceRequestController],
-//     providers: [ProductService, BalanceRequestService],
+    }),
+    ProdModule,
+    BlockchainModule,
+    UsersModule,
+  ],
 })
 export class AppModule {}
